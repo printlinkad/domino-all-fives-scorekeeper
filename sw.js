@@ -1,5 +1,5 @@
-const CACHE_NAME = 'domino-first-five-v1';
-const APP_FILES = ['./play.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png'];
+const CACHE_NAME = 'all-fives-calculator-v2';
+const APP_FILES = ['./index.html'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)).then(() => self.skipWaiting()));
 });
@@ -10,8 +10,8 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-  event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
+  event.respondWith(fetch(request).then(response => {
     if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
     return response;
-  }).catch(() => caches.match('./play.html'))));
+  }).catch(() => caches.match(request).then(cached => cached || caches.match('./index.html'))));
 });
